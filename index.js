@@ -107,6 +107,12 @@ function handleNumber(number) {
   // Your code here
   // This function should update the displayValue
   // Consider: Are we starting fresh? Continuing a number?
+  if (shouldResetDisplay) {
+    displayValue = number;
+    shouldResetDisplay = false;
+  } else {
+    displayValue = displayValue === "0" ? number : displayValue + number;
+  }
 }
 
 /**
