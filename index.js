@@ -27,7 +27,7 @@ console.log("Initial value of display: ", getDisplay());
 // DO NOT MODIFY THE CODE Above - Call or reference them in your code as needed
 // ===================================================================
 
-let num1 = null;
+let firstOperand = null;
 let operator = null;
 let shouldResetDisplay = false;
 let displayValue = "0";
@@ -54,21 +54,19 @@ function handleInput(input) {
   // Then call the appropriate helper function
   // you may need to use parseFloat
   // Don't forget to call updateDisplay() at the end!
-
   if (numbers.includes(input)) {
     handleNumber(input);
-  } else if (input === ".") {
-    handleDecimal(input);
   } else if (operators.includes(input)) {
     handleOperator(input);
-  } else if (input === "=") {
-    executeOperation();
-  } else if (input === "C") {
-    resetCalculator();
+  } else if (input === ".") {
+    handleDecimal();
   } else if (input === "CE") {
     displayValue = "0";
+  } else if (input === "C") {
+    resetCalculator();
+  } else if (input === "=") {
+    executeOperation();
   }
-
   updateDisplay(displayValue);
 }
 
@@ -77,7 +75,6 @@ function handleInput(input) {
 // Each should take two parameters (first, second) and return the result
 // Don't forget to add console.log statements for debugging!
 // Remember: division should check for division by zero and return "Error"
-
 function add(num1, num2) {
   return num1 + num2;
 }
@@ -91,7 +88,7 @@ function multiply(num1, num2) {
 }
 
 function divide(num1, num2) {
-  if (num2 === "0") {
+  if (num2 === 0) {
     console.error("Cannot divide by 0");
     return "Cannot divide by 0";
   } else {
@@ -107,10 +104,14 @@ function handleNumber(number) {
   // Your code here
   // This function should update the displayValue
   // Consider: Are we starting fresh? Continuing a number?
+
+  // This is handling the second number input after an operator is hit (strings)
   if (shouldResetDisplay) {
     displayValue = number;
     shouldResetDisplay = false;
-  } else {
+  }
+  // This is handling the first number input (all strings)
+  else {
     displayValue = displayValue === "0" ? number : displayValue + number;
   }
 }
@@ -121,6 +122,9 @@ function handleNumber(number) {
 function handleDecimal() {
   // Your code here
   // Make sure you don't add multiple decimal points to one number
+  if (!displayValue.includes(".")) {
+    displayValue += ".";
+  }
 }
 
 /**
@@ -131,6 +135,11 @@ function handleOperator(nextOperator) {
   // Your code here
   // Store the first number and operator
   // Prepare for the second number input
+  if (firstOperand === null) {
+    firstOperand = parseFloat(displayValue);
+  }
+  operator = nextOperator;
+  shouldResetDisplay = true;
 }
 
 /**
@@ -140,6 +149,32 @@ function executeOperation() {
   // Your code here
   // Use if/else statements to call the right operation function
   // Handle the result and any errors
+  if (operator === null || firstOperand === null) {
+    return;
+  }
+  let secondOperand = parseFloat(displayValue);
+  let result = 0;
+
+  switch (operator) {
+    case "+":
+      result = add(firstOperand, secondOperand);
+      break;
+    case "-":
+      result = subtract(firstOperand, secondOperand);
+      break;
+    case "*":
+      result = multiply(firstOperand, secondOperand);
+      break;
+    case "/":
+      result = divide(firstOperand, secondOperand);
+      break;
+    default:
+      return "Incorrect operation";
+  }
+  firstOperand = result;
+  displayValue = result.toString();
+  operator = null;
+  shouldResetDisplay = true;
 }
 
 /**
@@ -148,4 +183,8 @@ function executeOperation() {
 function resetCalculator() {
   // Your code here
   // Reset all state variables and display
+  firstOperand = null;
+  operator = null;
+  shouldResetDisplay = false;
+  displayValue = "0";
 }
